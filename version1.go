@@ -18,4 +18,7 @@ func version1(inputPath string, output io.Writer) error {
 	file, err := os.Open(inputPath)
 	if err != nil { return err }
 	defer file.Close()
+
+	stats := make(map[string]LocationStats)
+	parser := bufio.NewScanner(file)
 }
