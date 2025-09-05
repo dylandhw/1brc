@@ -12,7 +12,7 @@ import (
 
 func version1(inputPath string, output io.Writer) error {
 	type LocationStats struct {
-		min, max, avg float64
+		min, max, total float64
 		count int64
 	}
 	file, err := os.Open(inputPath)
@@ -27,14 +27,32 @@ func version1(inputPath string, output io.Writer) error {
 	*/
 	parser := bufio.NewScanner(file)
 
-	for parser.Parse(){
+	for parser.Scan(){
 		/*
 		-- process each row in the file
 		-- check for existence of semicolon
 			-- ensures only clean data is used
 		*/
 		row := parser.Text()
-		station, tempString, Semicolon := strings.Cut(row, ";") 
+		station, tempValue, Semicolon := strings.Cut(row, ";") 
 		if !Semicolon { continue }
+
+		/* string conversion */
+		temperature, err := strconv.ParseFloat(tempValue, 64)
+		if err != nil { return err }
+
+		s, ok := stats[station]
+		if !ok {
+			s.min = temperature 
+			s.max = temperature
+			s.total = temperature
+			s.count = 1
+		} else {
+			s.min = min(s.min, temperature)
+			s.max = max(s.max, temperature)
+			s.total += temperature
+			s.count += 1
+		}
+		stationStats[station] = s
 	}
 }
