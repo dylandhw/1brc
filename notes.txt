@@ -1,1 +1,1 @@
-version 1: 1.8s for 10 billion rows
+version 1: 1.8m for 10 billion rows
